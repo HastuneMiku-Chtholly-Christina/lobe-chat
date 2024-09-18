@@ -17,15 +17,23 @@ describe('featureFlagsSelectors', () => {
     const result = featureFlagsSelectors(store.getState());
 
     expect(result).toEqual({
-      enableWebrtc: true,
+      enableWebrtc: false,
       isAgentEditable: false,
       showCreateSession: true,
+      enableRAGEval: false,
       showDalle: true,
+      enableKnowledgeBase: true,
       showLLM: false,
+      showCloudPromotion: false,
       showOpenAIApiKey: true,
+      hideDocs: false,
+      hideGitHub: false,
       showOpenAIProxyUrl: true,
       enableCheckUpdates: true,
       showWelcomeSuggest: true,
+      enableClerkSignUp: true,
+      showMarket: true,
+      enableSTT: true,
     });
   });
 });

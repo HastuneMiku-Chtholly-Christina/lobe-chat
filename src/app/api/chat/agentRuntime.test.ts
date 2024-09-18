@@ -24,6 +24,7 @@ import {
   ModelProvider,
 } from '@/libs/agent-runtime';
 import { AgentRuntime } from '@/libs/agent-runtime';
+import { LobeStepfunAI } from '@/libs/agent-runtime/stepfun';
 
 import { initAgentRuntimeWithUserPayload } from './agentRuntime';
 
@@ -42,6 +43,7 @@ vi.mock('@/config/llm', () => ({
     AWS_SECRET_ACCESS_KEY: 'test-aws-secret',
     AWS_ACCESS_KEY_ID: 'test-aws-id',
     AWS_REGION: 'test-aws-region',
+    AWS_SESSION_TOKEN: 'test-aws-session-token',
     OLLAMA_PROXY_URL: 'https://test-ollama-url.local',
     PERPLEXITY_API_KEY: 'test-perplexity-key',
     DEEPSEEK_API_KEY: 'test-deepseek-key',
@@ -51,6 +53,7 @@ vi.mock('@/config/llm', () => ({
     OPENROUTER_API_KEY: 'test-openrouter-key',
     TOGETHERAI_API_KEY: 'test-togetherai-key',
     QWEN_API_KEY: 'test-qwen-key',
+    STEPFUN_API_KEY: 'test-stepfun-key',
   })),
 }));
 
@@ -74,7 +77,7 @@ describe('initAgentRuntimeWithUserPayload method', () => {
       const jwtPayload: JWTPayload = {
         apiKey: 'user-azure-key',
         endpoint: 'user-azure-endpoint',
-        azureApiVersion: '2024-02-01',
+        azureApiVersion: '2024-06-01',
       };
       const runtime = await initAgentRuntimeWithUserPayload(ModelProvider.Azure, jwtPayload);
       expect(runtime).toBeInstanceOf(AgentRuntime);
@@ -190,6 +193,13 @@ describe('initAgentRuntimeWithUserPayload method', () => {
       const runtime = await initAgentRuntimeWithUserPayload(ModelProvider.Groq, jwtPayload);
       expect(runtime).toBeInstanceOf(AgentRuntime);
       expect(runtime['_runtime']).toBeInstanceOf(LobeGroq);
+    });
+
+    it('Stepfun AI provider: with apikey', async () => {
+      const jwtPayload = { apiKey: 'user-stepfun-key' };
+      const runtime = await initAgentRuntimeWithUserPayload(ModelProvider.Stepfun, jwtPayload);
+      expect(runtime).toBeInstanceOf(AgentRuntime);
+      expect(runtime['_runtime']).toBeInstanceOf(LobeStepfunAI);
     });
 
     it('Unknown Provider: with apikey and endpoint, should initialize to OpenAi', async () => {
@@ -311,6 +321,14 @@ describe('initAgentRuntimeWithUserPayload method', () => {
 
       // 假设 LobeDeepSeekAI 是 DeepSeek 提供者的实现类
       expect(runtime['_runtime']).toBeInstanceOf(LobeDeepSeekAI);
+    });
+
+    it('Stepfun AI provider: without apikey', async () => {
+      const jwtPayload = {};
+      const runtime = await initAgentRuntimeWithUserPayload(ModelProvider.Stepfun, jwtPayload);
+
+      // 假设 LobeDeepSeekAI 是 DeepSeek 提供者的实现类
+      expect(runtime['_runtime']).toBeInstanceOf(LobeStepfunAI);
     });
 
     it('Together AI provider: without apikey', async () => {
